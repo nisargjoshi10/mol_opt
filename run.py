@@ -5,6 +5,7 @@ import yaml
 import os
 import sys
 sys.path.append(os.path.realpath(__file__))
+sys.path.append("/home/prg/Nisarg_data/moljet/mol_opt/TDC")
 from tdc import Oracle
 from time import time 
 
@@ -30,6 +31,7 @@ def main(method,oracle_name):
     parser.add_argument('--log_results', action='store_true')
     parser.add_argument('--log_code', action='store_true')
     parser.add_argument('--wandb', type=str, default="offline", choices=["online", "offline", "disabled"])
+    parser.add_argument('--target_name', type=str, default='None')
     args = parser.parse_args()
 
     os.environ["WANDB_MODE"] = args.wandb

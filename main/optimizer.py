@@ -55,10 +55,14 @@ class Oracle:
         if args is None:
             self.max_oracle_calls = 10000
             self.freq_log = 100
+            self.target_name = None
+            self.check_oracle = None
         else:
             self.args = args
             self.max_oracle_calls = args.max_oracle_calls
             self.freq_log = args.freq_log
+            self.target_name = args.target_name
+            self.check_oracle = args.oracles[0]
         self.mol_buffer = mol_buffer
         self.sa_scorer = tdc.Oracle(name = 'SA')
         self.diversity_evaluator = tdc.Evaluator(name = 'Diversity')
@@ -166,10 +170,13 @@ class Oracle:
             if smi in self.mol_buffer:
                 pass
             else:
-                self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
+                if self.check_oracle == 'Dockstring':
+                    self.mol_buffer[smi] = [float(self.evaluator(smi, self.target_name)), len(self.mol_buffer)+1]
+                else:
+                    self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
             return self.mol_buffer[smi][0]
     
-    def __call__(self, smiles_lst):
+    def __call__(self, smiles_lst, target_name):
         """
         Score
         """

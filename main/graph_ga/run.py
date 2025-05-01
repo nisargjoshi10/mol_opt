@@ -54,6 +54,8 @@ class GB_GA_Optimizer(BaseOptimizer):
     def __init__(self, args=None):
         super().__init__(args)
         self.model_name = "graph_ga"
+        self.target_name = args.target_name
+        self.check_oracle = args.oracles[0]
 
     def _optimize(self, oracle, config):
 
@@ -72,7 +74,11 @@ class GB_GA_Optimizer(BaseOptimizer):
         # population_smiles = heapq.nlargest(config["population_size"], starting_population, key=oracle)
         population_smiles = starting_population
         population_mol = [Chem.MolFromSmiles(s) for s in population_smiles]
-        population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol])
+        print('self.check target name',self.target_name)
+        if self.check_oracle == 'Dockstring':
+            population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol], self.target_name)
+        else:
+            population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol])
 
         patience = 0
 
