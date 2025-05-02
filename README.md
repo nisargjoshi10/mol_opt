@@ -117,6 +117,12 @@ We have processed the data, pretrained the model. Both are available in the repo
 | **[gflownet](https://arxiv.org/abs/2106.04399)**                                                          | fragment   | torch_{geometric,sparse,cluster}, pdb         | 30 min    |     yes    |
 | **[gflownet\_al](https://arxiv.org/abs/2106.04399)**                                                      | fragment   | torch_{geometric,sparse,cluster}, pdb         | 30 min    |    yes     ||
 
+## Example to run this code with dockstring oracle
+
+```bash
+python run.py --method graph_ga --oracles Dockstring --target_name YOUR_PROTEIN_TARGET --task simple --max_oracle_calls 10
+```
+
 
 ## Run with one-line code
 
