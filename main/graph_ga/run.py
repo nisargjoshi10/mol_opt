@@ -12,6 +12,7 @@ rdBase.DisableLog('rdApp.error')
 
 import main.graph_ga.crossover as co, main.graph_ga.mutate as mu
 from main.optimizer import BaseOptimizer
+from tqdm import tqdm
 
 
 MINIMUM = 1e-10
@@ -74,21 +75,23 @@ class GB_GA_Optimizer(BaseOptimizer):
         # population_smiles = heapq.nlargest(config["population_size"], starting_population, key=oracle)
         population_smiles = starting_population
         population_mol = [Chem.MolFromSmiles(s) for s in population_smiles]
-        print('self.check target name',self.target_name)
+
+        print('len of population mol', len(population_mol))
         if self.check_oracle == 'Dockstring':
             population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol], self.target_name)
         else:
             population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol])
 
         patience = 0
-
+        counter = 0
         while True:
-
+            print("ITERATION:", counter)
             if len(self.oracle) > 100:
                 self.sort_buffer()
                 old_score = np.mean([item[1][0] for item in list(self.mol_buffer.items())[:100]])
             else:
                 old_score = 0
+
 
             # new_population
             mating_pool = make_mating_pool(population_mol, population_scores, config["population_size"])
@@ -100,6 +103,8 @@ class GB_GA_Optimizer(BaseOptimizer):
 
             # stats
             old_scores = population_scores
+
+            print('len of new population mols', len(population_mol))
             population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol])
             population_tuples = list(zip(population_scores, population_mol))
             population_tuples = sorted(population_tuples, key=lambda x: x[0], reverse=True)[:config["population_size"]]
@@ -130,7 +135,8 @@ class GB_GA_Optimizer(BaseOptimizer):
                     patience = 0
 
                 old_score = new_score
-                
+            counter += 1
+
             if self.finish:
                 break
 

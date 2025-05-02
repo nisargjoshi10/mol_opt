@@ -67,7 +67,7 @@ class Oracle:
         self.sa_scorer = tdc.Oracle(name = 'SA')
         self.diversity_evaluator = tdc.Evaluator(name = 'Diversity')
         self.last_log = 0
-
+        print('self.target_name', type(self.target_name))
     @property
     def budget(self):
         return self.max_oracle_calls
@@ -171,12 +171,12 @@ class Oracle:
                 pass
             else:
                 if self.check_oracle == 'Dockstring':
-                    self.mol_buffer[smi] = [float(self.evaluator(smi, self.target_name)), len(self.mol_buffer)+1]
+                    self.mol_buffer[smi] = [self.evaluator(smi, self.target_name), len(self.mol_buffer)+1]
                 else:
                     self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
             return self.mol_buffer[smi][0]
     
-    def __call__(self, smiles_lst, target_name):
+    def __call__(self, smiles_lst, target_name=None):
         """
         Score
         """
