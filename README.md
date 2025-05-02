@@ -2,28 +2,29 @@
 
 ---
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/wenhao-gao/mol_opt)](https://github.com/wenhao-gao/mol_opt/stargazers)
-[![GitHub Repo forks](https://img.shields.io/github/forks/wenhao-gao/mol_opt)](https://github.com/wenhao-gao/mol_opt/network/members)
+This repo is forked from orignal [mol_opt](https://github.com/wenhao-gao/mol-opt) repositor for Practical Molecular Optimization (**PMO**), to facilitate the transparent and reproducible evaluation of algorithmic advances in molecular optimization. This repository supports 25 molecular design algorithms on 23 tasks with a particular focus on sample efficiency (oracle calls). The preprint version of the paper is available at https://arxiv.org/pdf/2206.12411.pdf
 
 
-This repository hosts an open-source benchmark for Practical Molecular Optimization (**PMO**), to facilitate the transparent and reproducible evaluation of algorithmic advances in molecular optimization. This repository supports 25 molecular design algorithms on 23 tasks with a particular focus on sample efficiency (oracle calls). The preprint version of the paper is available at https://arxiv.org/pdf/2206.12411.pdf
+In this repo we have extended the applications of the orignal [mol_opt](https://github.com/wenhao-gao/mol-opt) by adding the [Dockstring](https://github.com/wenhao-gao/mol-opt) oracle. This dockstring [code](https://github.com/nisargjoshi10/dockstring) is automated for accelerated docking score calculations for protein binding targets.
 
-## News
-
-We release a **lightweight mol_opt** in https://github.com/wenhao-gao/mol-opt It can be installed by **pip** and be used within **three lines of code**. 
 
 ## Installation 
 
 ```bash
-conda create -n molopt python=3.7
+conda create -n molopt python=3.10
 conda activate molopt 
-pip install torch 
-pip install PyTDC 
+pip install torch==1.11.0
+#pip install PyTDC 
 pip install PyYAML
-conda install -c rdkit rdkit 
+#conda install -c rdkit rdkit 
 ```
 
-We recommend to use PyTorch 1.10.2 and PyTDC 0.3.6. 
+We recommend to install PyTDC from this [github](https://github.com/nisargjoshi10/TDC/tree/main) and runing
+```bash
+pip install -r requirements.txt
+```
+
+We use PyTorch 1.11.0
 
 <!-- pip install guacamol  -->
 <!-- pip install networkx  -->
