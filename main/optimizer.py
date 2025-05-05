@@ -181,9 +181,9 @@ class Oracle:
             to_score = [smi for smi in smiles_lst] #extracting non-cached SMILES
 
             if len(to_score) > 100:
-                new_scores = Parallel(n_jobs=self.n_jobs)(delayed(self.score_smi(smi) for smi in to_score)
+                new_scores = Parallel(n_jobs=self.n_jobs)(delayed(self.score_smi(smi) for smi in to_score))
             else:
-                new_scores = [self.score(smi) for smi in to_score]
+                new_scores = [self.score_smi(smi) for smi in to_score]
 
             for smi, score in zip(to_score, new_scores):
                 self.mol_buffer[smi] = score
