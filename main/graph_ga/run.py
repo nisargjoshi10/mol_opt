@@ -77,10 +77,7 @@ class GB_GA_Optimizer(BaseOptimizer):
         population_mol = [Chem.MolFromSmiles(s) for s in population_smiles]
 
         print('len of population mol', len(population_mol))
-        if self.check_oracle == 'Dockstring':
-            population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol], self.target_name)
-        else:
-            population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol])
+        population_scores = self.oracle([Chem.MolToSmiles(mol) for mol in population_mol])
 
         patience = 0
         counter = 0

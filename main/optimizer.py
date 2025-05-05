@@ -170,13 +170,10 @@ class Oracle:
             if smi in self.mol_buffer:
                 pass
             else:
-                if self.check_oracle == 'Dockstring':
-                    self.mol_buffer[smi] = [self.evaluator(smi, self.target_name), len(self.mol_buffer)+1]
-                else:
-                    self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
+                self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
             return self.mol_buffer[smi][0]
     
-    def __call__(self, smiles_lst, target_name=None):
+    def __call__(self, smiles_lst):
         """
         Score
         """
