@@ -8,7 +8,7 @@ from rdkit.Chem import Draw
 import tdc
 from tdc.generation import MolGen
 from main.utils.chem import *
-
+from joblib import Parallel, delayed
 
 class Objdict(dict):
     def __getattr__(self, name):
@@ -178,14 +178,24 @@ class Oracle:
         Score
         """
         if type(smiles_lst) == list:
-            score_list = []
-            for smi in smiles_lst:
-                score_list.append(self.score_smi(smi))
-                if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
-                    self.sort_buffer()
-                    self.log_intermediate()
-                    self.last_log = len(self.mol_buffer)
-                    self.save_result(self.task_label)
+            to_score = [smi for smi in smiles_lst] #extracting non-cached SMILES
+
+            if len(to_score) > 100:
+                new_scores = Parallel(n_jobs=self.n_jobs)(delayed(self.score_smi(smi) for smi in to_score)
+            else:
+                new_scores = [self.score(smi) for smi in to_score]
+
+            for smi, score in zip(to_score, new_scores):
+                self.mol_buffer[smi] = score
+
+            if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
+                self.sort_buffer()
+                self.log_intermediate()
+                self.last_log = len(self.mol_buffer)
+                self.save_result(self.task_label)
+            
+            score_list = [self.mol_buffer[smi] for smi in smile_list]
+
         else:  ### a string of SMILES 
             score_list = self.score_smi(smiles_lst)
             if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
