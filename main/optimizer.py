@@ -180,7 +180,7 @@ class Oracle:
         if type(smiles_lst) == list:
             to_score = [smi for smi in smiles_lst if smi not in self.mol_buffer] #extracting non-cached SMILES
 
-            if len(to_score) > 100:
+            if self.n_jobs != -1:
                 new_scores = Parallel(n_jobs=self.n_jobs)(delayed(self.score_smi(smi) for smi in to_score))
             else:
                 new_scores = [self.score_smi(smi) for smi in to_score]
