@@ -175,7 +175,7 @@ class Oracle:
                 self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
             return self.mol_buffer[smi][0]
     
-    def get_chunks(input_list, chunk_size):
+    def get_chunks(self, input_list, chunk_size):
         """
         Split a list into chunkcs of specified size.
 
@@ -195,7 +195,7 @@ class Oracle:
 
         return chunks
 
-    def score_chunk(smiles_chunk):
+    def score_chunk(self, smiles_chunk):
         """
         Returns a dict with scores for SMILES string
 
