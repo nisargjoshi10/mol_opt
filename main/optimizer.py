@@ -8,7 +8,8 @@ from rdkit.Chem import Draw
 import tdc
 from tdc.generation import MolGen
 from main.utils.chem import *
-
+from joblib import Parallel, delayed
+import math
 
 class Objdict(dict):
     def __getattr__(self, name):
@@ -170,25 +171,73 @@ class Oracle:
             if smi in self.mol_buffer:
                 pass
             else:
-                if self.check_oracle == 'Dockstring':
-                    self.mol_buffer[smi] = [self.evaluator(smi, self.target_name), len(self.mol_buffer)+1]
-                else:
-                    self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
+                self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
             return self.mol_buffer[smi][0]
     
-    def __call__(self, smiles_lst, target_name=None):
+    def get_chunks(input_list, chunk_size):
+        """
+        Split a list into chunkcs of specified size.
+
+        Parameters:
+        ----------
+              input_list (list): the list to be split.
+              chunk_size (int): size of each chunk.
+
+        Returns:
+            list: A list of chunks (lists)
+        -------
+        """
+
+        chunks = []
+        for i in range(0, len(input_list), chunk_size):
+            chunks.append(input_list[i:i+chunk_size])
+
+        return chunks
+
+    def score_chunk(smiles_chunk):
+        """
+        Returns a dict with scores for SMILES string
+
+        Parameters:
+        ----------
+            smiles_chunk (list): a list of smiles
+
+        Returns:
+        -------
+            chunk_dict (dict): dict with smiles and its score
+        """
+
+        return {smi: self.score_smi(smi) for smi in smiles_chunk}
+
+    def __call__(self, smiles_lst):
         """
         Score
         """
         if type(smiles_lst) == list:
-            score_list = []
-            for smi in smiles_lst:
-                score_list.append(self.score_smi(smi))
-                if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
-                    self.sort_buffer()
-                    self.log_intermediate()
-                    self.last_log = len(self.mol_buffer)
-                    self.save_result(self.task_label)
+            to_score = [smi for smi in smiles_lst if smi not in self.mol_buffer] #extracting non-cached SMILES
+            chunk_size = math.ceil(len(to_score)/ self.n_jobs)
+            smiles_chunks = self.get_chunks(to_score, chunk_size)
+
+            if self.n_jobs != -1:
+                results = Parallel(n_jobs=self.n_jobs)(delayed(self.score_chunk)(chunk) for chunk in smiles_chunks)
+            
+                for res in results:
+                    self.mol_buffer.update(res)
+
+            else:
+                new_scores = [self.score_smi(smi) for smi in to_score]
+
+                for smi, score in zip(to_score, new_scores):
+                    self.mol_buffer[smi] = score
+
+            if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
+                self.sort_buffer()
+                self.log_intermediate()
+                self.last_log = len(self.mol_buffer)
+                self.save_result(self.task_label)
+            
+            score_list = [self.mol_buffer[smi] for smi in smile_list]
+
         else:  ### a string of SMILES 
             score_list = self.score_smi(smiles_lst)
             if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
