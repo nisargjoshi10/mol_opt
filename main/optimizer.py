@@ -173,20 +173,61 @@ class Oracle:
                 self.mol_buffer[smi] = [float(self.evaluator(smi)), len(self.mol_buffer)+1]
             return self.mol_buffer[smi][0]
     
+    def get_chunks(input_list, chunk_size):
+        """
+        Split a list into chunkcs of specified size.
+
+        Parameters:
+        ----------
+              input_list (list): the list to be split.
+              chunk_size (int): size of each chunk.
+
+        Returns:
+            list: A list of chunks (lists)
+        -------
+        """
+
+        chunks = []
+        for i in range(0, len(input_list), chunk_size):
+            chunks.append(input_list[i:i+chunk_size])
+
+        return chunks
+
+    def score_chunk(smiles_chunk):
+        """
+        Returns a dict with scores for SMILES string
+
+        Parameters:
+        ----------
+            smiles_chunk (list): a list of smiles
+
+        Returns:
+        -------
+            chunk_dict (dict): dict with smiles and its score
+        """
+
+        return {smi: self.score_smi(smi) for smi in smiles_chunk}
+
     def __call__(self, smiles_lst):
         """
         Score
         """
         if type(smiles_lst) == list:
             to_score = [smi for smi in smiles_lst if smi not in self.mol_buffer] #extracting non-cached SMILES
+            chunk_size = math.ceil(len(smiles_list)/ self.n_jobs)
+            smiles_chunks = get_chunks(smiles_list, chunk_size)
 
             if self.n_jobs != -1:
-                new_scores = Parallel(n_jobs=self.n_jobs)(delayed(self.score_smi(smi) for smi in to_score))
+                results = Parallel(n_jobs=self.n_jobs)(delayed(score_chunk)(chunk) for chunk in smiles_chunks)
+            
+            for res in results:
+                self.mol_buffer.update(res)
+
             else:
                 new_scores = [self.score_smi(smi) for smi in to_score]
 
-            for smi, score in zip(to_score, new_scores):
-                self.mol_buffer[smi] = score
+                for smi, score in zip(to_score, new_scores):
+                    self.mol_buffer[smi] = score
 
             if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
                 self.sort_buffer()
