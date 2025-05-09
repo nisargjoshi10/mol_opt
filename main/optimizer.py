@@ -214,8 +214,8 @@ class Oracle:
         """
         if type(smiles_lst) == list:
             to_score = [smi for smi in smiles_lst if smi not in self.mol_buffer] #extracting non-cached SMILES
-            chunk_size = math.ceil(len(smiles_list)/ self.n_jobs)
-            smiles_chunks = get_chunks(smiles_list, chunk_size)
+            chunk_size = math.ceil(len(smiles_lst)/ self.n_jobs)
+            smiles_chunks = get_chunks(smiles_lst, chunk_size)
 
             if self.n_jobs != -1:
                 results = Parallel(n_jobs=self.n_jobs)(delayed(score_chunk)(chunk) for chunk in smiles_chunks)
