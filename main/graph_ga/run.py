@@ -27,7 +27,7 @@ def make_mating_pool(population_mol: List[Mol], population_scores, offspring_siz
     Returns: a list of RDKit Mol (probably not unique)
     """
     # scores -> probs 
-    population_scores = [min(0,s)*(-1) + MINIMUM for s in population_scores] #to maximize negative docking scores only
+    population_scores = [s + MINIMUM for s in population_scores] 
     sum_scores = sum(population_scores)
     population_probs = [p / sum_scores for p in population_scores]
     mating_pool = np.random.choice(population_mol, p=population_probs, size=offspring_size, replace=True)
