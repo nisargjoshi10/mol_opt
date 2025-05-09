@@ -220,8 +220,8 @@ class Oracle:
             if self.n_jobs != -1:
                 results = Parallel(n_jobs=self.n_jobs)(delayed(score_chunk)(chunk) for chunk in smiles_chunks)
             
-            for res in results:
-                self.mol_buffer.update(res)
+                for res in results:
+                    self.mol_buffer.update(res)
 
             else:
                 new_scores = [self.score_smi(smi) for smi in to_score]
