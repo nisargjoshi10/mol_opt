@@ -9,6 +9,7 @@ import tdc
 from tdc.generation import MolGen
 from main.utils.chem import *
 from joblib import Parallel, delayed
+import math
 
 class Objdict(dict):
     def __getattr__(self, name):
