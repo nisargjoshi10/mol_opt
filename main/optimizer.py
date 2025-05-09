@@ -78,7 +78,7 @@ class Oracle:
         self.evaluator = evaluator
 
     def sort_buffer(self):
-        self.mol_buffer = dict(sorted(self.mol_buffer.items(), key=lambda kv: kv[1][0], reverse=True))
+        self.mol_buffer = dict(sorted(self.mol_buffer.items(), key=lambda kv: kv[1], reverse=True))
 
     def save_result(self, suffix=None):
         
