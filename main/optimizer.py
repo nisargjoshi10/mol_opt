@@ -63,6 +63,7 @@ class Oracle:
             self.max_oracle_calls = args.max_oracle_calls
             self.freq_log = args.freq_log
             self.target_name = args.target_name
+            self.n_jobs = args.n_jobs
             self.check_oracle = args.oracles[0]
         self.mol_buffer = mol_buffer
         self.sa_scorer = tdc.Oracle(name = 'SA')
