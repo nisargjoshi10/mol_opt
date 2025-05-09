@@ -237,7 +237,7 @@ class Oracle:
                 self.last_log = len(self.mol_buffer)
                 self.save_result(self.task_label)
             
-            score_list = [self.mol_buffer[smi] for smi in smile_list]
+            score_list = [self.mol_buffer[smi] for smi in smile_lst]
 
         else:  ### a string of SMILES 
             score_list = self.score_smi(smiles_lst)
