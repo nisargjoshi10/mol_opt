@@ -104,7 +104,7 @@ class Oracle:
                     # If not spefcified, log current top-100 mols in buffer
                     temp_top100 = list(self.mol_buffer.items())[:100]
                     smis = [item[0] for item in temp_top100]
-                    scores = [item[1][0] for item in temp_top100]
+                    scores = [item[1] for item in temp_top100]
                     n_calls = len(self.mol_buffer)
                 else:
                     results = list(sorted(self.mol_buffer.items(), key=lambda kv: kv[1][1], reverse=False))[:self.max_oracle_calls]
