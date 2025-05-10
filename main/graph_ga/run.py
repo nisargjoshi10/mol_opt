@@ -119,7 +119,8 @@ class GB_GA_Optimizer(BaseOptimizer):
             ### early stopping
             if len(self.oracle) > 100:
                 self.sort_buffer()
-                new_score = np.mean([item[1][0] for item in list(self.mol_buffer.items())[:100]])
+                new_score = np.mean([item[1] for item in list(self.mol_buffer).items()[:100]])
+#                new_score = np.mean([item[1][0] for item in list(self.mol_buffer.items())[:100]])
                 # import ipdb; ipdb.set_trace()
                 if (new_score - old_score) < 1e-3:
                     patience += 1
