@@ -32,7 +32,7 @@ def top_auc(buffer, top_n, finish, freq_log, max_oracle_calls):
     sum = 0
     prev = 0
     called = 0
-    ordered_results = list(sorted(buffer.items(), key=lambda kv: kv[1][1], reverse=False))
+    ordered_results = list(sorted(buffer.items(), key=lambda kv: kv[1], reverse=False))
     for idx in range(freq_log, min(len(buffer), max_oracle_calls), freq_log):
         temp_result = ordered_results[:idx]
         temp_result = list(sorted(temp_result, key=lambda kv: kv[1][0], reverse=True))[:top_n]
