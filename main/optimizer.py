@@ -36,12 +36,12 @@ def top_auc(buffer, top_n, finish, freq_log, max_oracle_calls):
     for idx in range(freq_log, min(len(buffer), max_oracle_calls), freq_log):
         temp_result = ordered_results[:idx]
         temp_result = list(sorted(temp_result, key=lambda kv: kv[1], reverse=True))[:top_n]
-        top_n_now = np.mean([item[1][0] for item in temp_result])
+        top_n_now = np.mean([item[1] for item in temp_result])
         sum += freq_log * (top_n_now + prev) / 2
         prev = top_n_now
         called = idx
     temp_result = list(sorted(ordered_results, key=lambda kv: kv[1], reverse=True))[:top_n]
-    top_n_now = np.mean([item[1][0] for item in temp_result])
+    top_n_now = np.mean([item[1] for item in temp_result])
     sum += (len(buffer) - called) * (top_n_now + prev) / 2
     if finish and len(buffer) < max_oracle_calls:
         sum += (max_oracle_calls - len(buffer)) * top_n_now
