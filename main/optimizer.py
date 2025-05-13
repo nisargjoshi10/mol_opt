@@ -208,7 +208,8 @@ class Oracle:
             chunk_dict (dict): dict with smiles and its score
         """
 
-        return {smi: self.score_smi(smi) for smi in smiles_chunk}
+        return {smi: [self.score_smi(smi), len(self.mol_buffer) + i + 1] for i, smi in enumerate(smiles_chunk)}
+
 
     def __call__(self, smiles_lst):
         """
@@ -216,6 +217,10 @@ class Oracle:
         """
         if type(smiles_lst) == list:
             to_score = [smi for smi in smiles_lst if smi not in self.mol_buffer] #extracting non-cached SMILES
+            
+            if len(to_score) == 0:
+                return [self.mol_buffer[smi][0] for smi in smiles_lst]
+
             chunk_size = math.ceil(len(to_score)/ self.n_jobs)
             smiles_chunks = self.get_chunks(to_score, chunk_size)
 
@@ -227,9 +232,13 @@ class Oracle:
 
             else:
                 new_scores = [self.score_smi(smi) for smi in to_score]
+                
+                for i, (smi, score) in enumerate(zip(to_score, new_scores)):
+                    self.mol_buffer[smi] = [score, len(self.mol_buffer) + i + 1]
 
-                for smi, score in zip(to_score, new_scores):
-                    self.mol_buffer[smi] = score
+
+                #for smi, score in zip(to_score, new_scores):
+                #    self.mol_buffer[smi] = score
 
             if len(self.mol_buffer) % self.freq_log == 0 and len(self.mol_buffer) > self.last_log:
                 self.sort_buffer()
@@ -237,7 +246,7 @@ class Oracle:
                 self.last_log = len(self.mol_buffer)
                 self.save_result(self.task_label)
             
-            score_list = [self.mol_buffer[smi] for smi in smiles_lst]
+            score_list = [self.mol_buffer[smi][0] for smi in smiles_lst]
 
         else:  ### a string of SMILES 
             score_list = self.score_smi(smiles_lst)
